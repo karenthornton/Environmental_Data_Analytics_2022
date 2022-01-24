@@ -59,7 +59,7 @@ scores <- c(70,80,49,92)
 #did they pass, this is a categorical vector
 pass <-c(TRUE,TRUE,FALSE,TRUE)
 #make the three vectors into a dataframe
-df <-cbind(names,scores,pass)
+df <-data.frame(names,scores,pass)
 df
 #label the column headers
 colnames(df)<-c("Names","Scores","Pass")
