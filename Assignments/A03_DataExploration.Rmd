@@ -1,9 +1,11 @@
 ---
-title: "Assignment 3: Data Exploration"
-author: "Karen Thornton, Section #1"
-output: pdf_document
+title: 'Assignment 3: Data Exploration'
+author: 'Karen Thornton, Section #1'
+output:
+  pdf_document: default
+  word_document: default
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -25,13 +27,11 @@ The completed exercise is due on <>.
 
 1. Check your working directory, load necessary packages (tidyverse), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. **Be sure to add the `stringsAsFactors = TRUE` parameter to the function when reading in the CSV files.**
 
-```{r,  message = FALSE}
+```{r}
 library(tidyverse)
 getwd()
 Neonics <- read.csv("//Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = TRUE)
-Neonics
 Litter <- read.csv("//Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv", stringsAsFactors = TRUE)
-Litter
 ```
 
 ## Learn about your system
@@ -94,7 +94,7 @@ class(Neonics$Conc.1..Author.)
 9. Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year. 
 ```{r}
 ggplot(Neonics)+
-  geom_freqpoly(aes(x=Neonics$Publication.Year))
+  geom_freqpoly(aes(x=Publication.Year))
   
 ```
 
@@ -102,7 +102,7 @@ ggplot(Neonics)+
 ```{r}
 ggplot(Neonics)+
   geom_freqpoly(aes(x=Publication.Year,
-                color = Neonics$Test.Location))
+                    color = Test.Location))
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -114,7 +114,6 @@ Interpret this graph. What are the most common test locations, and do they diffe
 ```{r}
 ggplot(Neonics)+
   geom_bar(aes(x=Endpoint), color = "blue")
-summary(Neonics$Endpoint)
 ```
 
 > Answer: NOEL and LOEL were the most common end points. NOEL is terrestrial and has no observable effect. LOEL is terrestrial and has the lowest observable effect. 
@@ -133,11 +132,11 @@ unique(Litter$collectDate)
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r}
-unique(Litter)
-summary(Litter)
+unique(Litter$plotID)
+summary(Litter$plotID)
 ```
 
-> Answer: Unique gives you all the values that aren't duplicates. Summary gives you a count of all the values (event if they're the same value).
+> Answer: There were 12 plots sampled at Niwot Ridge. Unique gives you all the values that aren't duplicates. Summary gives you a count of all the values (event if they're the same value).
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 ```{r}
