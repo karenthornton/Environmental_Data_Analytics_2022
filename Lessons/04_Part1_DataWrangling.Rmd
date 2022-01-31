@@ -59,6 +59,7 @@ vignette("dplyr")
 ```
 
 ### Filter
+#use for rows
 
 Filtering allows us to choose certain rows (observations) in our dataset.
 
@@ -136,6 +137,7 @@ NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
 
 ```
 ### Select
+#use for columns
 
 Selecting allows us to choose certain columns (variables) in our dataset.
 
