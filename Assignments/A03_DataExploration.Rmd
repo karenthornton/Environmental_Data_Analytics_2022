@@ -3,6 +3,8 @@ title: "Assignment 3: Data Exploration"
 author: "Karen Thornton, Section #1"
 output: pdf_document
 geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## OVERVIEW
