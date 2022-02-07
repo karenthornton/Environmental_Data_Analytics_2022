@@ -41,7 +41,7 @@ library(colormap)
 
 PeterPaul.chem.nutrients <- 
   read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
-EPAair <- read.csv("./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv", stringsAsFactors = TRUE)
+EPAair <- read.csv("./Data/Processed/EPAair_O3_PM25_NC2021_Processed.csv", stringsAsFactors = TRUE)
 
 EPAair$Date <- as.Date(EPAair$Date, format = "%Y-%m-%d")
 PeterPaul.chem.nutrients$sampledate <- as.Date(PeterPaul.chem.nutrients$sampledate, format = "%Y-%m-%d")
@@ -59,16 +59,28 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Plot surface temperatures by day of  year. 
 # Color your points by year, and facet by lake in two rows.
 # Change the ylab name
-
+PeterPaulplot.Ex1 <-
+  ggplot(subset(PeterPaul.chem.nutrients, depth == 0))+
+  geom_point(aes(x = daynum, y = temperature_C, color = year4))+
+  facet_wrap(vars(lakename), nrow = 2)+
+  ylab("Surface Temperature") #+
+  #labels(legend = "Year")
+print(PeterPaulplot.Ex1)
 
 #2. 
 # Plot temperature by date. Color your points by depth.
 # Change the size of your point to 0.5
 # Change the color palette to magma and play with direction (+- 1), which one makes more sense?
 # Change x axis to include marker/labels every 5 years
-
-
-
+PeterPaulplot.Ex2 <-
+  ggplot(PeterPaul.chem.nutrients)+
+  geom_point(aes(x = sampledate, y= temperature_C, color = depth, size =0.5))+
+  ylab("Temperature in Celcius")+
+  scale_color_viridis(option = "magma", direction = -1)+
+  #1 instead of -1 will switch the color "direction"
+  scale_x_date(
+    date_breaks = "5 years", date_labels = "%Y")
+print(PeterPaulplot.Ex2)
 
 ```
 ## Plotting the relationship between two continuous variables: Scatterplot
@@ -81,7 +93,11 @@ Exercise: Plot relationships between air quality measurements
 # Plot AQI values for ozone by PM2.5, colored by latitude 
 # Make the points 50 % transparent
 # Add a line of best fit for the linear regression of these variables.
-
+EPAair.Ex3 <-
+ggplot(EPAair, aes(x= Ozone, y= PM2.5, color = SITE_LATITUDE))+
+  geom_point(alpha = 0.5)+
+  geom_smooth(method =lm)
+print(EPAair.Ex3)
 
 
 
