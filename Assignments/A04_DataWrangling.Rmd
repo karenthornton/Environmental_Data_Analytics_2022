@@ -138,10 +138,9 @@ write.csv(EPAair_wrangled_spread, row.names = FALSE, file = "/Users/karenthornto
 EPAair_summary <-
   EPAair_wrangled_spread %>%
   group_by(Site.Name, Month, Year) %>%
-  filter(!is.na(Ozone), !is.na(PM2.5)) %>%
   summarize(mean_ozone = mean(Ozone),
-            mean_pm2.5 = mean(PM2.5))
-#ask about this in class. I have no rows with missing values
+            mean_pm2.5 = mean(PM2.5)) %>%
+  filter(!is.na(mean_ozone) | !is.na(mean_pm2.5))
 
 #13
 dim(EPAair_summary)
@@ -149,5 +148,4 @@ dim(EPAair_summary)
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: We used 'drop_na' because we dont then in the final dataset. 
-#check this before turning in 
+> Answer: We used 'drop_na' because we dont need NA in the final dataset. 
