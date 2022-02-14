@@ -81,7 +81,7 @@ PhosPlot <- ggplot(PPChemNutrients,
   xlab("Phosphate") +
   ggtitle("Total Phosphorus by Phosphate")+
   geom_smooth(method =lm, color = "black")+
-  theme(legend.position = "right")
+  theme(legend.position = "right")+
   mytheme
   
 print(PhosPlot)
@@ -102,7 +102,7 @@ PPChemTemp<-ggplot(PPChemNutrients,
   geom_boxplot()+
   ylab("Temperature in Celcius")+
   xlab("Month")+
-  theme(legend.position = "right")
+  theme(legend.position = "right")+
   mytheme
 print(PPChemTemp)
 
@@ -112,7 +112,7 @@ PPChemTP<-ggplot(PPChemNutrients,
   geom_boxplot()+
   ylab("Total Phosphorous")+
   xlab("Month")+
-  theme(legend.position = "right")
+  theme(legend.position = "right")+
   mytheme
 print(PPChemTP)
 
@@ -122,7 +122,7 @@ PPChemTN<-ggplot(PPChemNutrients,
   geom_boxplot()+
   ylab("Total Nitrogen")+
   xlab("Month")+
-  theme(legend.position = "right")
+  theme(legend.position = "right")+
   mytheme
 print(PPChemTN)
 
