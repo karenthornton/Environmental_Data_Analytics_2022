@@ -33,15 +33,30 @@ the processed data file for the Niwot Ridge litter dataset (use the [`NEON_NIWO_
 
 ```{r}
 #1 
-
+getwd()
+library(tidyverse)
+library(cowplot)
+PPChemNutrients <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
+Niwotlitter <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
 #2 
-
+class(Niwotlitter$collectDate)
+class(PPChemNutrients$sampledate)
+Niwotlitter$collectDate <- 
+  as.Date(Niwotlitter$collectDate, format="%Y-%m-%d")
+PPChemNutrients$sampledate <- 
+  as.Date(PPChemNutrients$sampledate, format= "%Y-%m-%d")
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme.
 
 ```{r}
 #3
+mytheme <- theme_light(base_size = 16)+
+  theme(legend.position = "top",
+        legend.justification = "right",
+        axis.text = element_text(color= "black"))
+
+theme_set(mytheme)
 
 ```
 
@@ -52,6 +67,19 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r}
 #4
+PhosPlot <- ggplot(PPChemNutrients, 
+                   aes(x= po4, y= tp_ug, color = lakename))+
+  geom_point()+
+  xlim(0,50)+
+  ylim(0,150)+
+  ylab("Total phosphorus") +
+  xlab("Phosphate") +
+  ggtitle("Total Phosphorus by Phosphate")+
+  geom_smooth(method =lm, color = "black")+
+  theme(legend.position = "right")
+  mytheme
+  
+print(PhosPlot)
 
 ```
 
@@ -60,12 +88,59 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r}
 #5
+PPChemNutrients$month <- as.factor(PPChemNutrients$month)
+class(PPChemNutrients$month)
 
+PPChemTemp<-ggplot(PPChemNutrients, 
+                   aes(x= month, y= temperature_C, 
+                       color =lakename))+
+  geom_boxplot()+
+  ylab("Temperature in Celcius")+
+  xlab("Month")+
+  theme(legend.position = "right")
+  mytheme
+print(PPChemTemp)
+
+PPChemTP<-ggplot(PPChemNutrients, 
+                 aes(x= month, y= tp_ug, 
+                     color =lakename))+
+  geom_boxplot()+
+  ylab("Total Phosphorous")+
+  xlab("Month")+
+  theme(legend.position = "right")
+  mytheme
+print(PPChemTP)
+
+PPChemTN<-ggplot(PPChemNutrients, 
+                 aes(x= month, y= tn_ug, 
+                     color =lakename))+
+  geom_boxplot()+
+  ylab("Total Nitrogen")+
+  xlab("Month")+
+  theme(legend.position = "right")
+  mytheme
+print(PPChemTN)
+
+library(cowplot)
+legendTN<- get_legend(PPChemTN+ 
+                        theme(legend.position = "bottom"))
+
+
+CombinedGrids<-
+  plot_grid(PPChemTemp+
+              theme(legend.position = "none"),
+            PPChemTN+theme(legend.position = "none"),
+            PPChemTP+theme(legend.position = "none"),
+            align= "h", axis ="b",nrow=1)
+
+FinalNumb5<- plot_grid(CombinedGrids, legendTN, ncol =1, 
+                       rel_heights = c(1,.3))
+print(FinalNumb5)
 ```
 
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: 
+> Answer: The temperatures in the summer months (6,7,8) are higher than the other months. There are more points outside the upper quartile for Peter lake than Paul lake for total nitrogen and phosphorous. The numbers start to increase for nitrogen and phosphorous for the later months (7,8,9). 
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
@@ -73,7 +148,12 @@ Question: What do you observe about the variables of interest over seasons and b
 
 ```{r}
 #6
-
+LitterSub <- ggplot(subset(Niwotlitter, 
+                           functionalGroup == "Needles"),
+                    aes(x=collectDate, y= dryMass, color = nlcdClass))+
+  
+print(LitterSub)
+  
 #7
 
 
