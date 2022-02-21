@@ -16,7 +16,7 @@ editor_options:
 ```{r, message = FALSE}
 getwd()
 library(tidyverse)
-#install.packages("agricolae")
+install.packages("agricolae")
 library(agricolae)   #you may need to install/update package "htmltools" before installing and loading agricolae
 
 Litter <- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
@@ -76,6 +76,7 @@ bartlett.test(Litter.Totals$dryMass ~ Litter.Totals$plotID)
 # Format ANOVA as aov
 Litter.Totals.anova <- aov(data = Litter.Totals, dryMass ~ plotID)
 summary(Litter.Totals.anova)
+#null hypothesis for anova is that the means are all the same so if p value is less than 0.05 then you reject the null meaning the means are not the same!
 
 #results: reject null hypothesis i.e. difference between a pair of group means is statiscally significant
 
@@ -90,6 +91,7 @@ plot(Litter.Totals.anova2)
 # Post-hoc test
 # TukeyHSD() computes Tukey Honest Significant Differences
 TukeyHSD(Litter.Totals.anova)
+
 
 # Extract groupings for pairwise relationships
 Litter.Totals.groups <- HSD.test(Litter.Totals.anova, "plotID", group = TRUE)
