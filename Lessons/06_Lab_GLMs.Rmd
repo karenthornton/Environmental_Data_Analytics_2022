@@ -193,14 +193,20 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 
 #Exercise 3: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
 
-Reg1<-lm(EPAair$PM2.5 ~ EPAair$Ozone)
-summary(Reg1)
+#Reg1<-lm(EPAair$PM2.5 ~ EPAair$Ozone)
+#summary(Reg1)
+
+PM2.5byOzone.regression <- lm(data = EPAair, PM2.5 ~ Ozone)
+summary (PM2.5byOzone.regression)
 
 #Exercise 4: Build a scatterplot. Add a line and standard error for the linear regression. 
 
-ggplot(Reg1, aes(x=Ozone, y = PM2.5))+
-  geom_point()+
-  geom_smooth()
+
+
+
+#ggplot(Reg1, aes(x=Ozone, y = PM2.5))+
+ # geom_point()+
+ # geom_smooth(method = "lm", col="blue")
 
 ```
 
@@ -213,17 +219,27 @@ What other variables can we add to improve model?
 
 #Exercise 5: Build correlation plots and identify more possible explanatory variables to add to the regression.
 
+library(corrplot)
 EPAair.subset <-
   EPAair %>%
-  select(SITE_LATITUDE:PM2.5) %
+  select(meanLat:Ozone) %>%
+  na.omit()
+EPAaircorr<- cor(EPAair.subset)
+corrplot(EPAaircorr, method = "ellipse")
+corrplot.mixed(EPAaircorr, upper = "ellipse")
 
 
 #Exercise 6: Choose a model by AIC in a Stepwise Algorithm. Do the results from AIC match the variables you selected on Exercise 5?
 
+EPAAIC <- lm(data= EPAair.subset, PM2.5 ~ Ozone + Year + Month + meanLat + meanLng)
 
+step(EPAAIC)
 
 
 #Exercise 7: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 5. 
+
+EPAmodel <- lm(data = EPAair.subset, PM2.5 ~ Ozone + Month + meanLat + meanLng)
+summary(EPAmodel)
 
 ```
 

@@ -200,6 +200,7 @@ TPAIC <- lm(data = Paul.naomit, tp_ug ~ depth + dissolvedOxygen +
 
 #Choose a model by AIC in a Stepwise Algorithm
 step(TPAIC)
+# if the variable has a lower AIC then the "none" then they should not be included. so DONT remove any variable that make the AIC larger than the orginal AIC. Steps with continue until the "none" is the top one
 TPmodel <- lm(data = Paul.naomit, tp_ug ~ dissolvedOxygen + temperature_C + tn_ug)
 summary(TPmodel)
 
