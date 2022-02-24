@@ -189,12 +189,12 @@ TukeyHSD(Julylakes.anova)
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer:Central Long Lake, East Long Lake, Tuesday Lake, West Long Lake have the same mean temperature statistically. Ward lake is statistically distinct from all other lakes. 
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: You could use an interaction test. 
 
 
