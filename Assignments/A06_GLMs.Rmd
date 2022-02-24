@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: GLMs (Linear Regressios, ANOVA, & t-tests)"
-author: "Student Name"
+author: "Karen Thornton"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,9 +27,23 @@ The completed exercise is due on Monday, February 28 at 7:00 pm.
 
 ```{r setup}
 #1
+getwd()
+library(tidyverse)
+library(agricolae)
 
+NTL_LTER <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
+
+NTL_LTER$sampledate <- as.Date(NTL_LTER$sampledate, format = "%m/%d/%y")
+class(NTL_LTER$sampledate)
 
 #2
+
+mytheme <- theme_light(base_size = 14)+
+  theme(legend.position = "bottom",
+        legend.justification = "right",
+        axis.text = element_text(color= "black"))
+
+theme_set(mytheme)
 
 
 ```
@@ -39,8 +53,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: There is no change in temperature by depth across all lakes in July
+Ha: There is a change in temperature by depth across all lakes in July
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -52,31 +66,47 @@ Ha:
 
 ```{r scatterplot}
 #4
+library(lubridate)
+JulydepthAllLakes <-
+  NTL_LTER%>%
+  mutate(Month = month(sampledate))%>%
+  filter(Month == 7)%>%
+  select(lakename:daynum, depth, temperature_C)%>%
+  filter(!is.na(lakename), !is.na(year4), !is.na(daynum), !is.na(depth), !is.na(temperature_C))
 
 
 #5
 
+Julylakeplot <- ggplot(JulydepthAllLakes, 
+                       aes(x = depth, y = temperature_C, color = lakename))+
+  geom_point()+
+  geom_smooth(method = lm, color = "blue")+
+  ylim(0,35)+
+  xlab("Depth in Meters")+
+  ylab("Temperature in Celcius")
+print(Julylakeplot)
 
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: Temperature is greater with less depth. The distribution of points suggests that a linear trend might not be correct. It looks like it follows a logistic pattern. 
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
 #7
-
+Julylake.regression <- lm(data = JulydepthAllLakes, temperature_C ~ depth)
+summary(Julylake.regression)
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer:About 73% of variability in temperature is explained by the changes in depth. This is because the r-squared value is 0.7387. The degrees of freedom is 9726. It is statistically significant because the p-value (2.2e-16) is less than 0.05. This means that we reject the null hypothesis and prove that there is a statistically significant change in temperature by depth in all lakes. Temperature is predicted to change 1.94621 degrees for every 1m change in depth. 
 
 
 ---
@@ -91,17 +121,22 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r temperature.model}
 #9
-
-
+JulyLakesAIC <- lm(data= JulydepthAllLakes, 
+                   temperature_C ~ depth + daynum + year4)
+step(JulyLakesAIC)
+# all variables are good to predict temperature 
 
 #10
+Julylakes.multregression <- lm(data = JulydepthAllLakes, 
+                               temperature_C ~ depth + daynum + year4)
+summary(Julylakes.multregression)
 
 
 ```
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
+> Answer: The final set of explanatory variables is depth, daynum, and year (don't elimate any based on the AIC). About 74% of variance is explained by the model (r-squared value is 0.7411). This is a very slight improvement over the model using only depth as the explanatory variable.  
 
 
 
@@ -112,13 +147,19 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r anova.model}
 #12
+#anova model
+Julylakes.anova <- aov(data = JulydepthAllLakes, temperature_C ~ lakename)
+summary(Julylakes.anova)
 
+#linear model
+Julylakes.lm <- lm(data = JulydepthAllLakes, temperature_C ~ lakename)
+summary(Julylakes.lm)
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
+> Answer: Yes, there is a significant difference between mean temperature among lakes. The p-value is 2.2e-16 which is less than 0.05. This means that we reject the null. Since we reject the null there is a significant difference in means. 
 
 
 
@@ -126,7 +167,14 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r scatterplot.2}
 #14.
-
+Julylakeplot2 <- ggplot(JulydepthAllLakes, 
+                       aes(x = depth, y = temperature_C, color = lakename))+
+  geom_point(alpha =0.5)+
+  geom_smooth( aes(group = lakename, color = lakename), method = lm, se = FALSE)+
+  ylim(0,35)+
+  xlab("Depth in Meters")+
+  ylab("Temperature in Celcius")
+print(Julylakeplot2)
 
 ```
 
@@ -134,7 +182,8 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r tukey.test}
 #15
-
+TukeyHSD(Julylakes.anova)
+#the lakes that have different means will have a "p adj" not equal to zero
 
 ```
 
