@@ -72,13 +72,15 @@ JulydepthAllLakes <-
   mutate(Month = month(sampledate))%>%
   filter(Month == 7)%>%
   select(lakename:daynum, depth, temperature_C)%>%
-  filter(!is.na(lakename), !is.na(year4), !is.na(daynum), !is.na(depth), !is.na(temperature_C))
+  filter(!is.na(lakename), !is.na(year4), !is.na(daynum),
+         !is.na(depth), !is.na(temperature_C))
 
 
 #5
 
 Julylakeplot <- ggplot(JulydepthAllLakes, 
-                       aes(x = depth, y = temperature_C, color = lakename))+
+                       aes(x = depth, y = temperature_C, 
+                           color = lakename))+
   geom_point()+
   geom_smooth(method = lm, color = "blue")+
   ylim(0,35)+
@@ -98,7 +100,8 @@ print(Julylakeplot)
 
 ```{r linear.regression}
 #7
-Julylake.regression <- lm(data = JulydepthAllLakes, temperature_C ~ depth)
+Julylake.regression <- lm(data = JulydepthAllLakes, 
+                          temperature_C ~ depth)
 summary(Julylake.regression)
 
 ```
@@ -148,11 +151,13 @@ summary(Julylakes.multregression)
 ```{r anova.model}
 #12
 #anova model
-Julylakes.anova <- aov(data = JulydepthAllLakes, temperature_C ~ lakename)
+Julylakes.anova <- aov(data = JulydepthAllLakes, 
+                       temperature_C ~ lakename)
 summary(Julylakes.anova)
 
 #linear model
-Julylakes.lm <- lm(data = JulydepthAllLakes, temperature_C ~ lakename)
+Julylakes.lm <- lm(data = JulydepthAllLakes, 
+                   temperature_C ~ lakename)
 summary(Julylakes.lm)
 
 ```
@@ -168,9 +173,11 @@ summary(Julylakes.lm)
 ```{r scatterplot.2}
 #14.
 Julylakeplot2 <- ggplot(JulydepthAllLakes, 
-                       aes(x = depth, y = temperature_C, color = lakename))+
+                       aes(x = depth, y = temperature_C,
+                           color = lakename))+
   geom_point(alpha =0.5)+
-  geom_smooth( aes(group = lakename, color = lakename), method = lm, se = FALSE)+
+  geom_smooth( aes(group = lakename, color = lakename), 
+               method = lm, se = FALSE)+
   ylim(0,35)+
   xlab("Depth in Meters")+
   ylab("Temperature in Celcius")
