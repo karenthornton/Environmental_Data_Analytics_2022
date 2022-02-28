@@ -190,7 +190,6 @@ print(Julylakeplot2)
 ```{r tukey.test}
 #15
 TukeyHSD(Julylakes.anova)
-#the lakes that have different means will have a "p adj" not equal to zero
 
 ```
 
