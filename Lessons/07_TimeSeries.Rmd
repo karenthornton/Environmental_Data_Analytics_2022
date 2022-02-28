@@ -29,6 +29,11 @@ Today we will work with two datasets. The USGS dataset on discharge at the Eno R
 #dick-fuller test: the first work on testing for a unit root in time series, null hypothesis is that alpha is equal to 1 (i.e contain a unit root), alternative hypothesis is alpha is less than 1 (i.e. is stationary)
 #more general dick-fuller is ADF
 
+
+#correlation: how are they relate, increase together, decrease together, one increase and one decrease, between -1 and 1
+#auto correlation: how series is related to things previously in the same series. y1 and yn-1
+#partial auto correlation: relationship when the influence of intermediate values are eliminated
+
 library(tidyverse)
 library(lubridate)
 install.packages("trend")
