@@ -18,16 +18,26 @@ editor_options:
 Today we will work with two datasets. The USGS dataset on discharge at the Eno River and a new dataset we haven't explored yet on wind speed. The data file is available at "./Data/Raw/Wind_Speed_PortArthurTX.csv". It contains average wind speed in monthly time steps (elevation = 5 meters). The data is available from NOAA National Centers for Environmental Information (NCEI) [here][https://www.ncdc.noaa.gov/cdo-web/datasets#GSOM].
 
 ```{r, message = FALSE}
+#stationary data: a time series variable exhibiting no significant upward or downward trend over time
+#nonstationary data: a time series variable exhibiting a significant upward or downward trend over time
+#seasonal data: a time series variable exhibiting a repeating patterns at regular intervals over time
+#covariance and correlation measure joint variability of two variables (a measure of linear dependence b/t two variables)
+#autocorrelation: a measure of dependence b/t two adjacent values of the same variables
+#the probability laws that govern stationarity behavior does not change over time
+#Mann-Kendall Test: used to detect deterministic trends in series of environmental data, climate data or hydrological data. cannot be applied to seasonal data (null hypothesis is that its stationary)
+#spearman correlation coefficient is a statistical measure of the strength of a monotonic relationship, relationship doesn't have to be linear (unlike pearson), if the correlation is close to 0, then there is no trend
+#dick-fuller test: the first work on testing for a unit root in time series, null hypothesis is that alpha is equal to 1 (i.e contain a unit root), alternative hypothesis is alpha is less than 1 (i.e. is stationary)
+#more general dick-fuller is ADF
 
 library(tidyverse)
 library(lubridate)
-#install.packages("trend")
+install.packages("trend")
 library(trend)
-#install.packages("zoo")
+install.packages("zoo")
 library(zoo)
-#install.packages("Kendall")
+install.packages("Kendall")
 library(Kendall)
-#install.packages("tseries")
+install.packages("tseries")
 library(tseries)
 
 # Set theme
