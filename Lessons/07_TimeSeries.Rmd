@@ -131,6 +131,8 @@ Note: time series objects must be equispaced. In our case, we have daily data wi
 
 ```{r}
 EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), frequency = 365)
+#if you want to see the first 10 in the time series
+#head(dataset,10)
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
@@ -200,6 +202,7 @@ summary(wind_data$AWND)
 wind_data_clean <- 
   wind_data %>% 
   mutate( AWND.clean = zoo::na.approx(AWND) )
+#call the package if there are two calls from separate packages.
 
 summary(wind_data_clean$AWND.clean)
 #Note the NA is gone
