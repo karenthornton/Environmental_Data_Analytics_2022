@@ -74,23 +74,28 @@ Let's read some geospatial data into our coding environment. The file we'll read
 
 ```{r Read in road data}
 #Read a spatial dataset
+#if you just downloaded it then it might not include the geometry
 GasPlants <- st_read('https://opendata.arcgis.com/datasets/a0722062315143a7980cebb79a204781_4.geojson')
 #Alternative
 #GasPlants <- st_read('./Data/Spatial/Manufactured_Gas_Plant_Sites.geojson')
 
 #Explore
 class(GasPlants)
+#sf object means you can do spatial analysis
 names(GasPlants)
 str(GasPlants$geometry)
+#structure 
 
 #View using sf plot
 plot(GasPlants['STATUS'],pch=16)
 
 #View using ggplot
 ggplot(data=GasPlants) + geom_sf()
+#has coordinates as x and y axis
 
 #View using mapview
 mapview(GasPlants)
+#map backdrop
 
 ```
 
@@ -114,6 +119,7 @@ EPAair.sites <- EPAair %>%
     count_PM25 = sum(!is.na(PM2.5)))
 
 #Convert to a spatial dataframe
+#longitude is x axis
 EPAair.sf <- EPAair.sites %>% 
   st_as_sf(coords = c('SITE_LONGITUDE','SITE_LATITUDE'),
            crs=4326)
@@ -127,11 +133,13 @@ EPAair.sf <- EPAair.sites %>%
 ```{r Create a spatial dataframe from scratch}
 #First create a simple feature geometry object ("sfg")
 sfg_GraingerHall <- st_point(c(-78.9427,36.00465))
+#a point but doesn't know where it is
 class(sfg_GraingerHall)
 mapview(sfg_GraingerHall)
 
 #Upgrade to a simple feature geometry column by adding a crs 
 sfc_GraingerHall <- st_sfc(sfg_GraingerHall,crs=4326)
+#adding a spacial reference
 class(sfc_GraingerHall)
 mapview(sfc_GraingerHall)
 
