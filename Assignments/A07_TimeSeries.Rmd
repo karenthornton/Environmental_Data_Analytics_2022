@@ -89,7 +89,8 @@ GaringerOzoneWrangled <-
 
 # 5
 Days <-
-  as.data.frame(seq(as.Date("2010-01-01"), as.Date("2019-12-31"), by = "days"))
+  as.data.frame(seq(as.Date("2010-01-01"), 
+                    as.Date("2019-12-31"), by = "days"))
 colnames(Days) <- c('Date')
 view(Days)
 
@@ -107,7 +108,8 @@ dim(GaringerOzone2)
 
 ```{r}
 #7
-ggplot(GaringerOzone2, aes(x= Date, y= Daily.Max.8.hour.Ozone.Concentration))+
+ggplot(GaringerOzone2, 
+       aes(x= Date, y= Daily.Max.8.hour.Ozone.Concentration))+
   geom_line()+
   labs(x = "Date", y="Concentration (ppm)")+
   geom_smooth(method = lm)
@@ -173,10 +175,12 @@ GaringerOzone.monthly.ts  <-
 ```{r}
 #11
 
-monthly_decomposed <- stl(GaringerOzone.monthly.ts, s.window = "periodic")
+monthly_decomposed <- 
+  stl(GaringerOzone.monthly.ts, s.window = "periodic")
 plot(monthly_decomposed)
 
-daily_decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+daily_decomposed <- 
+  stl(GaringerOzone.daily.ts, s.window = "periodic")
 plot(daily_decomposed)
 
 
@@ -188,6 +192,7 @@ plot(daily_decomposed)
 ```{r}
 #12
 trend::smk.test(GaringerOzone.monthly.ts)
+#p-value is 0.04965
 
 ```
 
@@ -208,7 +213,7 @@ ggplot(GaringerOzone.monthly,
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: If you take out the seasonality the time series is still statistically significant. The p-value is 0.04965 which is less than 0.05, meaning the ozone has changed significantly since 2010, even when you look at the data without seasonality. ???
+> Answer: Even with seasonality, the time series is still statistically significant (ozone increaseing over time). The p-value is 0.04965 which is less than 0.05, meaning the ozone has changed significantly since 2010.
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -216,17 +221,16 @@ ggplot(GaringerOzone.monthly,
 
 ```{r}
 #15
-Garinger_Components <- as.data.frame(GaringerOzone.monthly.ts$time.series[,1:3])
+Garinger_Components <- 
+  monthly_decomposed$time.series[,2]+
+  monthly_decomposed$time.series[,3]
 
-
-EnoDischarge.late_Components <- as.data.frame(EnoDischarge.late_Decomposed$time.series[,1:3])
-
-EnoDischarge.late_Components <- mutate(EnoDischarge.late_Components,
-        Observed = EnoDischarge.late$discharge.mean,     
-        Date = EnoDischarge.late$datetime)
 
 #16
 
+trend::mk.test(Garinger_Components)
+#p-value is 0.00754
+
 ```
 
-> Answer: 
+> Answer: The p-value for the Mann-Kendall test (p-value = 0.04965) was a lot smaller (more statistically significant) than the Seasonal Mann-Kendall test (p-value = 0.00754). This shows that if you take the seasonality out of the equation the data is stil statistically significant. The ozone is still increasing with time. 
