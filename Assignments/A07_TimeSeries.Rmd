@@ -233,4 +233,4 @@ trend::mk.test(Garinger_Components)
 
 ```
 
-> Answer: The p-value for the Mann-Kendall test (p-value = 0.04965) was a lot smaller (more statistically significant) than the Seasonal Mann-Kendall test (p-value = 0.00754). This shows that if you take the seasonality out of the equation the data is stil statistically significant. The ozone is still increasing with time. 
+> Answer: The p-value for the Mann-Kendall test (p-value = 0.00754) was a lot smaller (more statistically significant) than the Seasonal Mann-Kendall test (p-value = 0.04965). This shows that if you take the seasonality out of the equation the data is stil statistically significant. The ozone is still increasing with time. 
