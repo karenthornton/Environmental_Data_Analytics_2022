@@ -146,7 +146,8 @@ GaringerOzone.monthly <-
   mutate(year = year(Date)) %>%
   mutate(month.year = my(paste0(month, "-", year))) %>%
   group_by(month.year, year, month) %>%
-  summarise(MeanOzone = mean(Daily.Max.8.hour.Ozone.Concentration))
+  summarise(MeanOzone = 
+              mean(Daily.Max.8.hour.Ozone.Concentration))
 
 ```
 
@@ -213,7 +214,7 @@ ggplot(GaringerOzone.monthly,
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: Even with seasonality, the time series is still statistically significant (ozone increaseing over time). The p-value is 0.04965 which is less than 0.05, meaning the ozone has changed significantly since 2010.
+> Answer: Even with seasonality, the time series is still statistically significant (ozone decreasing over time). The p-value is 0.04965 which is less than 0.05, meaning the ozone has changed significantly since 2010.
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -233,4 +234,4 @@ trend::mk.test(Garinger_Components)
 
 ```
 
-> Answer: The p-value for the Mann-Kendall test (p-value = 0.00754) was a lot smaller (more statistically significant) than the Seasonal Mann-Kendall test (p-value = 0.04965). This shows that if you take the seasonality out of the equation the data is stil statistically significant. The ozone is still increasing with time. 
+> Answer: The p-value for the Mann-Kendall test (p-value = 0.00754) was a lot smaller (more statistically significant) than the Seasonal Mann-Kendall test (p-value = 0.04965). This shows that if you take the seasonality out of the equation the data is stil statistically significant. The ozone is still decreasing with time. 
