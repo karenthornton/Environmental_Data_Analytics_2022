@@ -98,7 +98,7 @@ view(Days)
 #naming it GaringerOzone2 so it's not confused with the GaringerOzone above
 
 GaringerOzone2 <- left_join(Days, GaringerOzoneWrangled)
-dim(GaringerOzone)
+dim(GaringerOzone2)
 ```
 
 ## Visualize
@@ -107,10 +107,13 @@ dim(GaringerOzone)
 
 ```{r}
 #7
-
+ggplot(GaringerOzone2, aes(x= Date, y= Daily.Max.8.hour.Ozone.Concentration))+
+  geom_line()+
+  labs(x = "Date", y="Concentration (ppm)")+
+  geom_smooth(method = lm)
 ```
 
->Answer: 
+>Answer: Yes, there seems to be a slight downward trend in concentration over time. 
 
 ## Time Series Analysis
 
@@ -120,16 +123,28 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
+GaringerInterpolation <- 
+  GaringerOzone2 %>% 
+  mutate(Daily.Max.8.hour.Ozone.Concentration = zoo::na.approx(Daily.Max.8.hour.Ozone.Concentration))
+
+summary(GaringerInterpolation$Daily.Max.8.hour.Ozone.Concentration)
 
 ```
 
-> Answer:  
+> Answer: We used a linear interpolation because the concentration is continuous. In order to get from one concentration to the next it has to go through every concentration in between. Using a linear interpolation will get approximate this correctly. Using piecewise would grab the value of the closest concentration, so it would jump in concentrations instead of being continuous. Spline wasn't used because a quadratic equation was not needed. 
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
 
 ```{r}
 #9
+GaringerOzone.monthly <-
+  GaringerInterpolation %>%
+  mutate(month = month(Date)) %>%
+  mutate(year = year(Date)) %>%
+  mutate(month.year = my(paste0(month, "-", year))) %>%
+  group_by(month.year, year, month) %>%
+  summarise(MeanOzone = mean(Daily.Max.8.hour.Ozone.Concentration))
 
 ```
 
@@ -139,6 +154,16 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 ```{r}
 #10
 
+GaringerOzone.daily.ts <- 
+  ts(GaringerInterpolation$Daily.Max.8.hour.Ozone.Concentration, 
+     start = c(1,1,2010), frequency = 365)
+
+
+GaringerOzone.monthly.ts  <- 
+  ts(GaringerOzone.monthly$MeanOzone, 
+     start = c(1,2010), frequency = 12)
+
+#check these to see if they are correct! do i need to "print" them
 
 ```
 
@@ -148,6 +173,12 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 ```{r}
 #11
 
+monthly_decomposed <- stl(GaringerOzone.monthly.ts, s.window = "periodic")
+plot(monthly_decomposed)
+
+daily_decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+plot(daily_decomposed)
+
 
 ```
 
@@ -156,25 +187,28 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #12
-
-
+trend::smk.test(GaringerOzone.monthly.ts)
 
 ```
 
-> Answer:  
+> Answer: We use the seasonal Mann-Kendall because the data is seasonal and non-parametric. This data is nonparametric because we are evaluating it for the whole population, not a certain parameter. It is seasonal because it goes up and down in a cycle over time. 
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
 ```{r}
 # 13
-
+ggplot(GaringerOzone.monthly, 
+       aes(x= month.year, y = MeanOzone))+
+  geom_point()+
+  geom_line()+
+  labs(y= "Mean Monthly Ozone (ppm)", x= "Time")
 
 
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: If you take out the seasonality the time series is still statistically significant. The p-value is 0.04965 which is less than 0.05, meaning the ozone has changed significantly since 2010, even when you look at the data without seasonality. ???
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -182,6 +216,7 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #15
+
 
 #16
 
