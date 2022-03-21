@@ -1,6 +1,6 @@
 ---
 title: "Assignment 9: Spatial Analysis in R"
-author: "Student Name"
+author: "Karen Thornton"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -30,10 +30,13 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 
 ```{r Prepare workspace}
 #1.
-
+getwd()
 
 #2. 
-
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(mapview)
 
 ```
 
@@ -47,19 +50,27 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
-
+NebraskaCounties <- st_read("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Spatial/cb_2018_us_county_20m.shp")%>%
+  filter(STATEFP == 31)
 
 #4. Reveal the CRS of the counties features
 
+st_crs(NebraskaCounties)
 
 #5. Plot the data
+
+ggplot()+
+  geom_sf(data=NebraskaCounties, aes())
+
+#should i have a fill?
 
 ```
 
 6. What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (Or, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: look the EPSG code on <https://spatialreference.org>) 
 
 > ANSWER: 
-> 
+> The EPSG code is 4269, it is a projected coordinate reference system, it has angular coordinate units and it is associated with the NAD 83 datum. 
+
 
 
 ### Read in gage locations csv as a dataframe, then display the column names it contains
@@ -73,15 +84,18 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
 
+GageLocations <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Raw/NWIS_SiteInfo_NE_RAW.csv")
+
 
 #8. Reveal the names of the columns
 
+colnames(GageLocations)
 
 ```
 
 9. What columns in the dataset contain the x and y coordinate values, respectively?  
 > ANSWER:
-> 
+> x coordinates are longitude so the column heading is dec_long_va and the y coordinates are latitude so the column heading is dec_lat_va
 
 
 ### Convert the dataframe to a spatial features ("sf") dataframe
@@ -94,8 +108,13 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 ```{r Convert dataframe to sf dataframe}
 #10. Convert to an sf object
 
+Gage_sf <- GageLocations %>%
+  st_as_sf(coords = c("dec_long_va", "dec_lat_va"),
+           crs=4269)
 
 #11. Re-examine the column names
+
+colnames(Gage_sf)
 
 
 ```
@@ -103,7 +122,7 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 12. What new field(s) appear in the sf dataframe created? What field(s), if any, disappeared?
 
 >ANSWER: 
->
+>The latitude and longitude columns are gone now and replaced with "coord_acy_cd", "dec_coord_datum_cd" and "geometry" 
 
 
 ### Plot the gage locations on top of the counties
@@ -116,6 +135,10 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
 
+ggplot()+
+  geom_sf(data= NebraskaCounties, aes())+
+  geom_sf(data= Gage_sf, aes(), color = "red")+
+  labs(title = "NWIS Gage Locations in Nebraska", subtitle = "Karen Thornton")
 
 ```
 
@@ -134,19 +157,24 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 
 ```{r}
 #14. Read the site flow data into a data frame
-
+SiteFlowData <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 1/Semester 2/EDA/Environmental_Data_Analytics_2022/Data/Raw/NWIS_SiteFlowData_NE_RAW.csv")
 
 #15. Show the column names
 
+colnames(SiteFlowData)
 
 #16. Join location data to it
-
+joined_location <- Gage_sf %>%
+  left_join(SiteFlowData, c("site_no", "station_nm")) %>%
+  na.omit()
 
 #17. Show the column names of the joined dataset
 
+colnames(joined_location)
 
 #18. Show the dimensions of this joined dataset
 
+dim(joined_location)
 
 ```
 
