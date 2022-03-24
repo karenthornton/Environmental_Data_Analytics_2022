@@ -194,6 +194,7 @@ df_withdrawals <- data.frame("Month" = rep(1:12),
                              "Year" = rep(the_year,12),
                              "Avg_Withdrawals_mgd" = as.numeric(the_withdrawals)) %>% 
   mutate(Registrant = !!the_registrant,
+         #!! says to use the "variable" instead???
          Facility_name = !!the_facility_name,
          Facility_type = !!the_facility_type,
          Date = my(paste(Month,"-",Year)))

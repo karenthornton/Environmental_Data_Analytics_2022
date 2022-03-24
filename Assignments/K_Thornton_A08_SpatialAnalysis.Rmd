@@ -1,11 +1,13 @@
 ---
-title: "Assignment 9: Spatial Analysis in R"
+title: 'Assignment 9: Spatial Analysis in R'
 author: "Karen Thornton"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
-  markdown: 
+  markdown:
     wrap: 72
 ---
 
@@ -62,7 +64,6 @@ st_crs(NebraskaCounties)
 ggplot()+
   geom_sf(data=NebraskaCounties, aes())
 
-#should i have a fill?
 
 ```
 
@@ -138,7 +139,8 @@ colnames(Gage_sf)
 ggplot()+
   geom_sf(data= NebraskaCounties, aes())+
   geom_sf(data= Gage_sf, aes(), color = "red")+
-  labs(title = "NWIS Gage Locations in Nebraska", subtitle = "Karen Thornton")
+  labs(title = "NWIS Gage Locations in Nebraska",
+       subtitle = "Karen Thornton")
 
 ```
 
@@ -165,7 +167,8 @@ colnames(SiteFlowData)
 
 #16. Join location data to it
 joined_location <- Gage_sf %>%
-  left_join(SiteFlowData, c("site_no", "station_nm")) %>%
+  left_join(SiteFlowData, 
+            c("site_no", "station_nm")) %>%
   na.omit()
 
 #17. Show the column names of the joined dataset
@@ -186,10 +189,13 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r}
 #Map the points, sized by gage height
-
-
-#ggplot
-
+ggplot()+
+  geom_sf(data= NebraskaCounties)+
+  geom_sf(data= joined_location$geometry, 
+          aes(size = joined_location$gage_ht), 
+          alpha = 0.7, color = "blue")+
+  labs(title = "NWIS Gage Heights in Nebraska", 
+       subtitle = "Karen Thornton")
 
 ```
 
@@ -208,8 +214,17 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 ```{r}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 
+NebCounties_utm <- st_transform(NebraskaCounties, 
+                                crs = 32614)
+GageLocations_utm <-st_transform(Gage_sf, 
+                                 crs = 32614)
 
 #21 Plot the data
+
+ggplot()+
+  geom_sf(data=NebCounties_utm)+
+  geom_sf(data= GageLocations_utm, 
+          color = "red")
 
 
 ```
@@ -229,12 +244,20 @@ Now let's zoom into a particular county and examine the gages located there.
 ```{r}
 #22 Select the county
 
+LancasterCounty <-NebCounties_utm %>%
+                     filter(NAME == "Lancaster")
+
 
 #23 Select gages within the selected county
 
+GagesLancaster <- GageLocations_utm[LancasterCounty,]
+
 
 #24 Plot
-
+ggplot()+
+  geom_sf(data = NebCounties_utm)+
+  geom_sf(data = LancasterCounty, color = "blue")+
+  geom_sf(data=GagesLancaster, color = "red")
 
 
 ```
