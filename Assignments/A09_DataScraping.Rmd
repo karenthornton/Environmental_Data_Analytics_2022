@@ -114,15 +114,28 @@ df_WaterSupply <- data.frame("Month" = c("Jan", "May", "Sep",
                              "Max_Withdrawals_mgd" = 
                                as.numeric(max.withdrawals.mgd))
 
+library(lubridate)
+
 df_WaterSupply <- df_WaterSupply %>%
   mutate(Water_System_Name = !!water.system.name,
          PSWID = !!pswid,
-         Owenership = !!ownership)
+         Ownership = !!ownership,
+         Date = my(paste(Month,"-",Year)))
 
 
 #5
+df_WaterSupply$Month <- as.factor(df_WaterSupply$Month)
+df_WaterSupply$Month <- factor(df_WaterSupply$Month, 
+                               levels = c ("Jan", "Feb", "Mar",
+                                           "Apr", "May", "Jun",
+                                           "Jul", "Aug", "Sep",
+                                           "Oct", "Nov", "Dec"))
 
-
+ggplot(df_WaterSupply, aes(y=Max_Withdrawals_mgd, x= Month))+
+  geom_point()+
+  labs(title = "Max Daily Withdrawals by Month in 2020",
+       x="Month",
+       y="Max Withrawals (mgd)")
 
 ```
 
@@ -131,7 +144,57 @@ df_WaterSupply <- df_WaterSupply %>%
 ```{r construct.a.scraping.function}
 #6.
 
+the_function <- function(the_year, the_pwsid){
+  the_base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?'
+  the_scrape_url <- paste0(the_base_url,'pwsid=', the_pwsid, '&year=', the_year)
+  print(the_scrape_url)
 
+  webpage <- read_html(the_scrape_url)
+
+  water.system.name.tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
+  pswid.tag <- "td tr:nth-child(1) td:nth-child(5)"
+  ownership.tag <- "div+ table tr:nth-child(2) td:nth-child(4)"
+  max.withdrawals.mgd.tag <- "th~ td+ td"
+
+  water.system.name <-  webpage %>% 
+    html_nodes(water.system.name.tag) %>% 
+    html_text()
+  water.system.name
+  pswid <- webpage %>% 
+    html_nodes(pswid.tag) %>% 
+    html_text()
+  pswid
+  ownership <- webpage %>% 
+    html_nodes(ownership.tag) %>% 
+    html_text()
+  ownership
+  max.withdrawals.mgd <- webpage %>% 
+    html_nodes(max.withdrawals.mgd.tag) %>% 
+    html_text()
+  max.withdrawals.mgd
+
+  df_WaterSupply <- data.frame("Month" = c("Jan", "May", "Sep", 
+                                         "Feb", "Jun", "Oct", 
+                                         "Mar", "Jul", "Nov", 
+                                         "Apr", "Aug", "Dec"),
+                             "Year" = rep(the_year,12),
+                             "Max_Withdrawals_mgd" = 
+                               as.numeric(max.withdrawals.mgd))
+
+  df_WaterSupply <- df_WaterSupply %>%
+    mutate(Water_System_Name = !!water.system.name,
+         PSWID = !!pswid,
+         Ownership = !!ownership,
+         Date = my(paste(Month,"-",Year)))
+
+  df_WaterSupply$Month <- as.factor(df_WaterSupply$Month)
+  df_WaterSupply$Month <- factor(df_WaterSupply$Month, 
+                               levels = c ("Jan", "Feb", "Mar",
+                                           "Apr", "May", "Jun",
+                                           "Jul", "Aug", "Sep",
+                                           "Oct", "Nov", "Dec"))
+return(df_WaterSupply)
+}
 
 ```
 
@@ -140,6 +203,13 @@ df_WaterSupply <- df_WaterSupply %>%
 ```{r fetch.and.plot.Durham.2015.data}
 #7
 
+Dur2015 <- the_function(2015,'03-32-010')
+
+ggplot(Dur2015, aes(y=Max_Withdrawals_mgd, x= Month))+
+  geom_point()+
+  labs(title = "Max Daily Withdrawals by Month",
+       x="Month",
+       y="Max Withrawals (mgd)")
 
 ```
 
@@ -148,6 +218,26 @@ df_WaterSupply <- df_WaterSupply %>%
 ```{r fetch.and.plot.Durham.2015.data}
 #8
 
+Ash2015 <- the_function(2015,'01-11-010')
+
+ggplot(Ash2015, aes(y=Max_Withdrawals_mgd, x= Month))+
+  geom_point()+
+  labs(title = "Max Daily Withdrawals by Month",
+       x="Month",
+       y="Max Withrawals (mgd)")
+
+#combine
+
+Combined <- rbind(Ash2015, Dur2015)
+
+#plot
+Combined$Water_System_Name <- as.factor(Combined$Water_System_Name)
+
+ggplot(Combined, aes(y=Max_Withdrawals_mgd, x=Month,
+                     col= Water_System_Name))+
+  geom_point()+
+  labs(title = "Water Withdrawals",
+       y="Max Withdrawals (MGD)", x= "Month")
 
 ```
 
@@ -156,7 +246,17 @@ df_WaterSupply <- df_WaterSupply %>%
 
 ```{r}
 #9
+the_years = rep(2010:2019)
+my_pwsid = '01-11-010'
+Ash2010to1019 <- lapply(X = the_years,
+                  FUN = the_function,
+                  the_pwsid=my_pwsid)
+CombAshDates <- bind_rows(Ash2010to1019)
 
+ggplot(CombAshDates, aes(y= Max_Withdrawals_mgd, x= Month))+
+  geom_line(aes(col = Year))+
+  geom_point()+
+  labs(title = "Asheville Max Withdrawals 2010 to 2019", y = "Max Withdrawals (MGD)", x = "Month")
 
 ```
 
