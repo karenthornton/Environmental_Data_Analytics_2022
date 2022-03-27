@@ -146,7 +146,8 @@ ggplot(df_WaterSupply, aes(y=Max_Withdrawals_mgd, x= Month))+
 
 the_function <- function(the_year, the_pwsid){
   the_base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?'
-  the_scrape_url <- paste0(the_base_url,'pwsid=', the_pwsid, '&year=', the_year)
+  the_scrape_url <- paste0(the_base_url,'pwsid=', the_pwsid,
+                           '&year=', the_year)
   print(the_scrape_url)
 
   webpage <- read_html(the_scrape_url)
@@ -215,7 +216,7 @@ ggplot(Dur2015, aes(y=Max_Withdrawals_mgd, x= Month))+
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares the Asheville to Durham's water withdrawals.
 
-```{r fetch.and.plot.Durham.2015.data}
+```{r fetch.and.plot.Asheville.2015.data}
 #8
 
 Ash2015 <- the_function(2015,'01-11-010')
@@ -253,11 +254,15 @@ Ash2010to1019 <- lapply(X = the_years,
                   the_pwsid=my_pwsid)
 CombAshDates <- bind_rows(Ash2010to1019)
 
-ggplot(CombAshDates, aes(y= Max_Withdrawals_mgd, x= Month))+
+CombAshDates$Year <- as.factor(CombAshDates$Year)
+
+ggplot(CombAshDates, aes(y= Max_Withdrawals_mgd, x= month(Date)))+
   geom_line(aes(col = Year))+
   geom_point()+
-  labs(title = "Asheville Max Withdrawals 2010 to 2019", y = "Max Withdrawals (MGD)", x = "Month")
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  labs(title = "Asheville Max Withdrawals 2010 to 2019",
+       y = "Max Withdrawals (MGD)", x = "Month")
 
 ```
 
->Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
+>Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time? Yes, over time Asheville uses more water. It's higher in Jan and Feb then dips in March, goes back up from April to July then back down to December. The year 2019 is an outlier year. 
