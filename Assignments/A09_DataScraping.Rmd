@@ -259,6 +259,7 @@ CombAshDates$Year <- as.factor(CombAshDates$Year)
 ggplot(CombAshDates, aes(y= Max_Withdrawals_mgd, x= month(Date)))+
   geom_line(aes(col = Year))+
   geom_point()+
+  geom_smooth()+
   scale_x_continuous(breaks = seq(1, 12, by = 1))+
   labs(title = "Asheville Max Withdrawals 2010 to 2019",
        y = "Max Withdrawals (MGD)", x = "Month")
