@@ -65,10 +65,22 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 
 <Fill in our discussion below with bullet points. Use italics and bold for emphasis (hint: use the cheat sheets or `Help` →`Markdown Quick Reference` to figure out how to make bold and italic text).> 
 
+* Take Notes
+* Easy to replicate
+* Step-by-step _error_ analysis
+* Present code __and__ results 
+* When you knit it automatically has the plots (don't have to go back and update them all)
+
 
 ## TEXT EDITING CHALLENGE
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the names of the datasets and the second column should include some relevant information about the datasets. (Hint: use the cheat sheets to figure out how to make a table in Rmd)
+
+Data set Names  |   Data set information
+--------------- |   --------------------
+Peter-Paul      |   Information from Peter and Paul lake
+NTL-LTER        |   Nutrient Data
+EPA air         |   Air data from NC EPA
 
 
 ## R CHUNK EDITING CHALLENGE
@@ -76,6 +88,10 @@ Create a table below that details the example datasets we have been using in cla
 ### Installing packages
 
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run).
+
+```{r eval=FALSE}
+install.packages("knitr")
+```
 
 
 ### Setup
