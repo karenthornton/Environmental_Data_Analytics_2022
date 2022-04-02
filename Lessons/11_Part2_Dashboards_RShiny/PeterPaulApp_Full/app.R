@@ -2,6 +2,8 @@
 library(shiny)
 library(shinythemes)
 library(tidyverse)
+library(viridis)
+library(viridisLite)
 
 #### Load data ----
 nutrient_data <- read_csv("Data/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
@@ -11,7 +13,7 @@ nutrient_data <- nutrient_data %>%
   select(lakename, sampledate:po4)
 
 #### Define UI ----
-ui <- fluidPage(theme = shinytheme("yeti"),
+ui <- fluidPage(theme = shinytheme("cyborg"),
   titlePanel("Nutrients in Peter Lake and Paul Lake"),
   sidebarLayout(
     sidebarPanel(
@@ -20,7 +22,7 @@ ui <- fluidPage(theme = shinytheme("yeti"),
       selectInput(inputId = "y", 
                   label = "Nutrient",
                   choices = c("tn_ug", "tp_ug", "nh34", "no23", "po4"), 
-                  selected = "tp_ug"),
+                  selected = "nh34"),
       
       # Select depth
       checkboxGroupInput(inputId = "fill",
@@ -32,7 +34,7 @@ ui <- fluidPage(theme = shinytheme("yeti"),
       checkboxGroupInput(inputId = "shape",
                          label = "Lake",
                          choices = c("Peter Lake", "Paul Lake"),
-                         selected = "Peter Lake"),
+                         selected = "Paul Lake"),
 
       # Select date range to be plotted
       sliderInput(inputId = "x",
@@ -63,12 +65,12 @@ server <- function(input, output) {
         ggplot(filtered_nutrient_data(), 
                aes_string(x = "sampledate", y = input$y, 
                           fill = "depth_id", shape = "lakename")) +
-          geom_point(alpha = 0.8, size = 2) +
-          theme_classic(base_size = 14) +
+          geom_point(alpha = 0.7, size = 3) +
+          theme_classic(base_size = 12) +
           scale_shape_manual(values = c(21, 24)) +
           labs(x = "Date", y = expression(Concentration ~ (mu*g / L)), shape = "Lake", fill = "Depth ID") +
-          scale_fill_distiller(palette = "YlOrBr", guide = "colorbar", direction = 1)
-          #scale_fill_viridis_c(option = "viridis", begin = 0, end = 0.8, direction = -1)
+          #scale_fill_distiller(palette = "YlOrBr", guide = "colorbar", direction = 1)
+          scale_fill_viridis_c(option = "viridis", begin = 0, end = 0.8, direction = -1)
       })
        
     # Create a table that generates data for each point selected on the graph  
